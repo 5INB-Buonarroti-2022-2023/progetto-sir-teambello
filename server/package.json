@@ -7,7 +7,7 @@
     "test": "jest",
     "dev": "node-dev src/main.ts"
   },
-  "author": "",
+  "author": "leonardo agostini",
   "license": "ISC",
   "dependencies": {
     "cors": "2.8.5",

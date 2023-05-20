@@ -17,6 +17,9 @@ mongoose.connect(uri, async () => {
 });
 */
 
-app.listen(3000, () => {
-    console.log("server started");
+const PORT = 3000;
+
+app.listen(PORT, ()  => {
+    console.log("hi! server started")
 });
+
