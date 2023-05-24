@@ -7,7 +7,7 @@ const imageSchema = new mongoose.Schema({
 });
 
 export const imageModel = mongoose.model("image", imageSchema);
-//export default imageModel;
+export default imageModel;
 
 const userSchema = new mongoose.Schema({
     userName: {type: String, required: true},

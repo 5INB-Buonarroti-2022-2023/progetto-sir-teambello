@@ -58,15 +58,15 @@ export class processingAPI {
 
 
         //return image 
-        const p = path.join(this.pathToImages, req.params.productID + ".png");
+        //const p = path.join(this.pathToImages, req.params.productID + ".jpg");
+        const p = path.join(this.pathToImages, "test.jpg");
         // console.log(p);
         if (!fs.existsSync(p)) {
             // res.status(404).send("image not found");
             res.status(404).sendFile(notFoundImage);
             return;
         }
-        res.send("hi");
-        //res.sendFile(p);
+        res.sendFile(p);
         
     }
 }
