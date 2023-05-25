@@ -38,6 +38,7 @@ const utente = new userModel({
     userName: "mario",
     hashPassword: "ax1iwk93a",
     mail: "mario@gmail.com", //forse
+    isAdmin: true,
 });
 
 await utente.save();

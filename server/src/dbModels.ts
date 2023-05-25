@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
     userName: {type: String, required: true},
     hashPassword: {type: String, required: true},
     mail: {type: String, required: true}, //forse
+    isAdmin: { type: Boolean, required: true, default: false },
 });
 
 export const userModel = mongoose.model("user", userSchema);
+
+const loginTokenSchema = new mongoose.Schema({
+    userID: { type: String, required: true },
+    expires: { type: Date, required: true },
+});
+
+export const loginTokenModel = mongoose.model("loginTokens", loginTokenSchema);
