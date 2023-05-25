@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./uploader.component.scss']
 })
 export class UploaderComponent {
+	/*
 	private selectedFiles!: File[];
 
 	constructor(private http: HttpClient) { }
@@ -28,5 +29,5 @@ export class UploaderComponent {
 		}, error => {
 		  console.error(error);
 		});
-	}	
+	}	*/
 }
