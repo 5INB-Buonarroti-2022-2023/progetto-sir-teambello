@@ -4,7 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import path from "path";
 import { app } from "./server";
-import imageModel from "./dbModels";
+import { imageModel } from "./dbModels";
+import { userModel } from "./dbModels";
 
 //db connection to app db
 //  Usate questa sezione se volete usare un db mongodb
@@ -26,12 +27,18 @@ app.listen(PORT, ()  => {
 
 /*
 const immagine = new imageModel({
-    id: 1,
+    id: 2,
     path: "/ciao",
-    result: 10,
+    result: 11,
 });
 
-async () => {
-    await immagine.save();
-};
+await immagine.save();
+
+const utente = new userModel({
+    userName: "mario",
+    hashPassword: "ax1iwk93a",
+    mail: "mario@gmail.com", //forse
+});
+
+await utente.save();
 */
