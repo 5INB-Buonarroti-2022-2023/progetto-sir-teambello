@@ -1,36 +1,32 @@
 import { Component } from '@angular/core';
-
+import { HttpClient } from '@angular/common/http';
+	
 @Component({
   selector: 'uploader',
   templateUrl: './uploader.component.html',
   styleUrls: ['./uploader.component.scss']
 })
 export class UploaderComponent {
-	//decomentare se si decide di far vedere anche l'immagine non processata
+	private selectedFiles!: File[];
 
-	/*
-	url: any; 
-  	msg = "";
-	
-	selectFile(event: any) {
-		if(!event.target.files[0] || event.target.files[0].length == 0) {
-			this.msg = 'You must select an image';
-			return;
-		}
-		
-		var mimeType = event.target.files[0].type;
-		
-		if (mimeType.match(/image\/*/   /*) == null) {// rimuovere  /* per decomentare
-			this.msg = "Only images are supported";
-			return;
-		}
-		
-		var reader = new FileReader();
-		reader.readAsDataURL(event.target.files[0]);
-		
-		reader.onload = (_event) => {
-			this.msg = "";
-			this.url = reader.result; 
-		}
-	}*/
+	constructor(private http: HttpClient) { }
+  
+	onFilesSelected(event: { target: { files: File[]; }; }): void {
+	  this.selectedFiles = event.target.files;
+	}
+  
+	onUpload(): void {
+	  const formData = new FormData();
+	  for (let i = 0; i < this.selectedFiles.length; i++) {
+		formData.append('images', this.selectedFiles[i]);
+	  }
+  
+	  this.http.post('http://localhost:3000/images/service/tmp', formData)
+		.subscribe(response => {
+		  console.log(response);
+		  // Esegui le operazioni desiderate dopo il caricamento delle immagini
+		}, error => {
+		  console.error(error);
+		});
+	}	
 }

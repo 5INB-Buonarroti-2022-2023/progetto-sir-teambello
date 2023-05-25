@@ -7,8 +7,7 @@ import { processingAPI } from "./api/processingAPI";
 export const app = Express();
 
 const pathToImages = path.resolve(path.join(__dirname, '../images/'));
-console.log(__dirname);
-export const notFoundImage = path.resolve(path.join(pathToImages, '/design/notFound.png'));
+export const notFoundImage = path.resolve(path.join(pathToImages, '/design/notFound.jpg'));
 export const pathToSavedImages = path.resolve(path.join(pathToImages, '/service/saved/'));
 export const pathToTmpImages = path.resolve(path.join(pathToImages, '/service/tmp/'));
 
