@@ -1,10 +1,12 @@
+import sys
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
 cascade = cv2.CascadeClassifier('bacteriadetector.xml')
 
-img = cv2.imread('Easy_1.bmp')
+image_name = sys.argv[1]
+img = cv2.imread()
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 font = cv2.FONT_HERSHEY_SIMPLEX
 bac = cascade.detectMultiScale(gray, 1.345, 5, 75)
@@ -16,7 +18,7 @@ p, l, m = cv2.split(img)
 img = cv2.merge([m, l, p])
 
 print(len(bac))
-cv2.imwrite('processed_image.jpg', img)
+cv2.imwrite('processed-'+image_name, img)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
