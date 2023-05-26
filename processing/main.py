@@ -1,7 +1,6 @@
+#!/usr/bin/python3
 import sys
-import numpy as np
 import cv2
-from matplotlib import pyplot as plt
 
 cascade = cv2.CascadeClassifier('bacteriadetector.xml')
 
@@ -17,7 +16,6 @@ for (x, y, w, h) in bac:
 p, l, m = cv2.split(img)
 img = cv2.merge([m, l, p])
 
-print(len(bac))
 cv2.imwrite('processed-'+image_name, img)
 
 cv2.waitKey(0)

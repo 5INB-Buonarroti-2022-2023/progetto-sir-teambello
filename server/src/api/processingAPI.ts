@@ -2,95 +2,75 @@ import Express from "express";
 import path from "path";
 import fs from "fs";
 import { notFoundImage, pathToTmpImages } from "../server";
-import multer from 'multer';
-import {exec} from 'child_process'
+import { exec } from 'child_process'
 
 import { UploadedFile } from "express-fileupload";
-
+import spawn from 'child_process';
 
 export class processingAPI {
     private readonly pathToImages = pathToTmpImages;
 
-    private diskStorage = multer.diskStorage({
-        destination:  this.pathToImages,
-
-        filename: (req, file, cb) => {           
-            cb(null, file.fieldname+"-"+Date.now() + path.extname(file.originalname));
-            //console.log(file);
-        }
-    });
-
-    private upload = multer({ storage: this.diskStorage  });
-
     constructor(private app: Express.Application) {
-        this.app.post("/api/process",this.process);
+        this.app.post("/api/process", this.process);
     }
 
-
-    /*
-        1)  caricata immagine utente
-        2)  rinomaninata con date.now()
-        3)  salvata in /images/tmp
-        4)  processing dell'immagine
-        4)  salvato sul db secondo il seguente schema: 
-        {
-            id : number
-            path : original img
-            path : processed img
-            risultato : number
-        }
-        5) restituita immagine processata
-    */
     private process = async (req: Express.Request, res: Express.Response) => {
-        console.log(req.files);
-        
-        if (!req.files?.file || !req.body.name || !req.body.price || !req.body.description) {
-            res.status(418).send("invalid request");
+        //saving image
+        if (!req.files?.images) {
+            // console.log("Invalid request");
+            res.status(400).send("invalid request");
             return;
         }
-        this.upload.array("images");
-        
-        
 
-        const file = req.files.file;
-        (file as UploadedFile).mv(path.join(this.pathToImages,"png"));
+        const fileNames: string[] = [];
 
-        /*
-        const o = req.files;
-        const asd : UploadedFile = o[0];
-        console.log(asd.name);
+        if (Array.isArray(req.files?.images)) {
+            const files = req.files!.images as UploadedFile[];
+            files.map(file => {
+                const fileName = path.join(this.pathToImages, Math.trunc(Math.random() * 10000) + Date.now() + ".png");
+                (file as UploadedFile).mv(fileName);
+                return fileName;
+            });
 
-        */        
-        
-
-        //saving image in db
-        const imageID = '';
-        
-        //code to process
-        exec('python3 processing/main.py '+this.pathToImages+imageID, (error, stdout, stderr) => {
-            if (error) {
-              console.log(`error: ${error.message}`);
-            }
-            else if (stderr) {
-              console.log(`stderr: ${stderr}`);
-            }
-            else {
-              console.log(stdout);
-            }
-          })
-          
+        } else {
+            fileNames.push(path.join(this.pathToImages, Math.trunc(Math.random() * 10000) + Date.now() + ".png"));
+            (req.files.images as UploadedFile).mv(fileNames[0]);
+        }
 
 
 
-        //return processed image 
+        //process image
+        console.log(path.join('../../../processing/main.py'));
+        fileNames.forEach(file => {
+
+            /*
+            exec('python3 '+path.join('../../../processing/main.py') + file , (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message}`);
+                }
+                else if (stderr) {
+                    console.log(`stderr: ${stderr}`);
+                }
+                else {
+                    console.log(stdout);
+                }
+            })*/
+
+
+            spawn.execFile('../../../processing/main.py');
+            
+        }
+        )
+
+        //6) return processed image 
         //const p = path.join(this.pathToImages, req.params.productID + ".jpg");
-        const p = path.join(this.pathToImages, "processed-"+imageID);
+        const p = path.join(this.pathToImages, "test.jpg");
         if (!fs.existsSync(p)) {
             res.status(404).sendFile(notFoundImage);
             return;
         }
-        res.send('ok')
-        //res.sendFile(p);
+        res.sendFile(p);
 
     }
+
 }

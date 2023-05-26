@@ -5,6 +5,10 @@ import path from "path";
 import { processingAPI } from "./api/processingAPI";
 
 export const app = Express();
+app.use(fileUpload({
+  createParentPath: true
+}));
+
 
 const pathToImages = path.resolve(path.join(__dirname, '../images/'));
 export const notFoundImage = path.resolve(path.join(pathToImages, '/design/notFound.jpg'));
