@@ -4,7 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import path from "path";
 import { app } from "./server";
-import imageModel from "./dbModels";
+import { imageModel } from "./dbModels";
+import { userModel } from "./dbModels";
 
 //db connection to app db
 //  Usate questa sezione se volete usare un db mongodb

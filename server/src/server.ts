@@ -3,6 +3,7 @@ import Express from "express";
 import fileUpload from "express-fileupload";
 import path from "path";
 import { processingAPI } from "./api/processingAPI";
+import { LoginAPI } from "./api/loginAPI";
 
 export const app = Express();
 app.use(fileUpload({
@@ -22,3 +23,4 @@ app.get("/api/notfound/image", (req, res) => {
 });
 
 new processingAPI(app);
+new LoginAPI(app);
