@@ -5,7 +5,25 @@ import { notFoundImage, pathToTmpImages } from "../server";
 import { exec } from 'child_process'
 
 import { UploadedFile } from "express-fileupload";
-import spawn from 'child_process';
+
+class result {
+    private _fileName: string;
+    private _value: Number;
+    
+
+    constructor(fileName: string, value: Number){
+        this._fileName = fileName;
+        this._value = value;
+    }
+   
+    get fileName() {
+        return this._fileName;
+    }
+
+    public get value(): Number {
+        return this._value;
+    }
+}
 
 export class processingAPI {
     private readonly pathToImages = pathToTmpImages;
@@ -27,24 +45,27 @@ export class processingAPI {
         if (Array.isArray(req.files?.images)) {
             const files = req.files!.images as UploadedFile[];
             files.map(file => {
-                const fileName = path.join(this.pathToImages, Math.trunc(Math.random() * 10000) + Date.now() + ".png");
-                (file as UploadedFile).mv(fileName);
+                const fileName = Math.trunc(Math.random() * 10000) + Date.now() + ".jpg";
+                (file as UploadedFile).mv(path.join(this.pathToImages, fileName));
                 return fileName;
             });
 
         } else {
-            fileNames.push(path.join(this.pathToImages, Math.trunc(Math.random() * 10000) + Date.now() + ".png"));
-            (req.files.images as UploadedFile).mv(fileNames[0]);
+            fileNames.push(Math.trunc(Math.random() * 10000) + Date.now() + ".jpg");
+            (req.files.images as UploadedFile).mv(path.join(this.pathToImages, fileNames[0]));
         }
 
 
 
         //process image
-        console.log(path.join('../../../processing/main.py'));
-        fileNames.forEach(file => {
+        let results : result[] = []; 
 
-            /*
-            exec('python3 '+path.join('../../../processing/main.py') + file , (error, stdout, stderr) => {
+
+        fileNames.forEach(file => {
+            //console.log(file);
+
+            exec('python3 ' + path.resolve('../processing/main.py' + '  ' + file), (error, stdout, stderr) => {
+
                 if (error) {
                     console.log(`error: ${error.message}`);
                 }
@@ -52,13 +73,9 @@ export class processingAPI {
                     console.log(`stderr: ${stderr}`);
                 }
                 else {
-                    console.log(stdout);
+                    console.log(`stdout: ${stdout}`);
                 }
-            })*/
-
-
-            spawn.execFile('../../../processing/main.py');
-            
+            })
         }
         )
 
