@@ -1,5 +1,5 @@
 import Express from "express";
-import imageModel from "../dbModels";
+import { imageModel } from "../dbModels";
 
 
 export class processingAPI {

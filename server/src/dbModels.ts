@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const imageSchema = new mongoose.Schema({
-    id: {type: Number, required: true},
+    _id: {type: Number, required: true},
     original_img: {type: String, required: true},
     processed_img: {type: String, required: true},
     result: {type: Number, required: true},//in teoria json non e un tipo ammesso ma non segnala errori

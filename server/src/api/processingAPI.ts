@@ -5,17 +5,18 @@ import { notFoundImage, pathToTmpImages } from "../server";
 import { exec } from 'child_process'
 
 import { UploadedFile } from "express-fileupload";
+import { imageModel } from "../dbModels";
 
 class result {
-    private _fileName: string;
-    private _value: Number;
-    
+    _fileName: string;
+    _value: Number;
 
-    constructor(fileName: string, value: Number){
+
+    constructor(fileName: string, value: Number) {
         this._fileName = fileName;
         this._value = value;
     }
-   
+
     get fileName() {
         return this._fileName;
     }
@@ -58,12 +59,9 @@ export class processingAPI {
 
 
         //process image
-        let results : result[] = []; 
+        let results: result[] = [];
 
-
-        fileNames.forEach(file => {
-            //console.log(file);
-
+        fileNames.forEach(async (file) => {
             exec('python3 ' + path.resolve('../processing/main.py' + '  ' + file), (error, stdout, stderr) => {
 
                 if (error) {
@@ -73,21 +71,34 @@ export class processingAPI {
                     console.log(`stderr: ${stderr}`);
                 }
                 else {
-                    console.log(`stdout: ${stdout}`);
+                    let procImgName = stdout.substring(0, stdout.indexOf(':')).trim();
+                    let val = Number.parseInt(stdout.substring(stdout.indexOf(':') + 1).trim());
+                    console.log(procImgName);
+                    console.log(val);
+                    results.push(new result(procImgName, val));
+                    console.log(results);
                 }
             })
+
         }
         )
 
+        //problema di asyncronicità
+
+        console.log('tst')
+        
         //6) return processed image 
         //const p = path.join(this.pathToImages, req.params.productID + ".jpg");
-        const p = path.join(this.pathToImages, "test.jpg");
-        if (!fs.existsSync(p)) {
-            res.status(404).sendFile(notFoundImage);
-            return;
-        }
-        res.sendFile(p);
+        // const p = path.join(this.pathToImages, results[0].fileName);
 
+        /*
+                if (!fs.existsSync(p)) {
+                    res.status(404).sendFile(notFoundImage);
+                    return;
+                }
+                res.sendFile(p);
+          
+            */
     }
 
 }
