@@ -1,11 +1,14 @@
-import Express from "express";
+import Express, { query } from "express";
 import path from "path";
 import fs from "fs";
-import { notFoundImage, pathToTmpImages } from "../server";
+import { pathToTmpImages } from "../server";
 import { exec } from 'child_process'
 
 import { UploadedFile } from "express-fileupload";
 import { imageModel } from "../dbModels";
+import { mongo } from "../main";
+import mongoose from "mongoose";
+
 
 class result {
     private _processedFileName: string;
@@ -13,14 +16,14 @@ class result {
     private _value: Number;
 
 
-    constructor(originalFileName: string, processedFileName : string, value: Number) {
+    constructor(originalFileName: string, processedFileName: string, value: Number) {
         this._originalFileName = originalFileName;
         this._processedFileName = processedFileName;
         this._value = value;
     }
 
 
-    get originalFileName(){
+    get originalFileName() {
         return this._originalFileName;
     }
 
@@ -36,13 +39,69 @@ class result {
 interface ImageData {
     base64Image: string;
     message: string;
-  }  
+}
 
 export class processingAPI {
+
+    private readonly projection: { [key: string]: 0 | 1 } = {
+        original_img: 1,
+        processed_img: 1,
+        result: 1,
+        _id: 0,
+    };
+
     private readonly pathToImages = pathToTmpImages;
 
     constructor(private app: Express.Application) {
         this.app.post("/api/process", this.process);
+        this.app.get('/api/public', this.public);
+    }
+
+    private readonly dbName = 'bacteria';
+    private public = async (req: Express.Request, res: Express.Response) => {
+
+        mongoose.connect('mongodb+srv://Bacteria:Bacteria@bacteria.vjhddyx.mongodb.net/?retryWrites=true&w=majority',
+            { dbName: this.dbName })
+            .then(() => {
+                console.log('Connected to MongoDB');
+
+
+                // Perform the query with projection
+                imageModel.find({}, this.projection, (err, documents) => {
+                    if (err) {
+                        console.error('Error executing query:', err);
+                        return;
+                    }
+
+                    console.log('Query results:', documents[1].processed_img);
+
+                    const resultQuery = documents.map(doc => {
+                        return { processed_img: doc.processed_img, value: doc.result }
+                    })
+
+                    const imageData: ImageData[] = [];
+                    resultQuery.forEach(result => {
+                        const filePath = path.join(pathToTmpImages, result.processed_img!);
+                        const data = fs.readFileSync(filePath);
+                        const base64Image = Buffer.from(data).toString('base64');
+                        imageData.push({
+                            base64Image,
+                            message: 'l\'immagine contiene circa ' + result.value! + ' elementi',
+                        });
+
+                    })
+
+
+                    // Close the MongoDB connection
+                    mongoose.connection.close();
+                    res.json(imageData);
+                });
+            })
+            .catch((err) => {
+                console.error('Error connecting to MongoDB:', err);
+            });
+
+
     }
 
     private process = async (req: Express.Request, res: Express.Response) => {
@@ -87,7 +146,6 @@ export class processingAPI {
                                 let procImgName = stdout.substring(0, stdout.indexOf(':')).trim();
                                 let val = Number.parseInt(stdout.substring(stdout.indexOf(':') + 1).trim());
                                 results.push(new result(file, procImgName, val));
-                                console.log(results)
                             }
                             resolve();
                         }
@@ -96,10 +154,9 @@ export class processingAPI {
             })
         );
 
-        console.log('zdravo');
         const imageData: ImageData[] = [];
 
-        results.forEach( result => {
+        results.forEach(result => {
 
             //to add code for mongodb
             const immagine = new imageModel({
@@ -107,19 +164,19 @@ export class processingAPI {
                 processed_img: result.processedFileName,
                 result: result.value,
             });
-            
+
             immagine.save();
 
             const filePath = path.join(pathToTmpImages, result.processedFileName);
             const data = fs.readFileSync(filePath);
             const base64Image = Buffer.from(data).toString('base64');
             imageData.push({
-              base64Image,
-              message: 'l\'immagine contiene circa '+result.value+' elementi',
+                base64Image,
+                message: 'l\'immagine contiene circa ' + result.value + ' elementi',
             });
-          });
-        
-          res.json(imageData);
+        });
+
+        res.json(imageData);
     }
 
 }
