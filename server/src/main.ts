@@ -16,7 +16,7 @@ mongoose.set('strictQuery', false);
 mongoose.connect(uri, async () => {
 
 });*/
-//mongoose.connect("mongodb+srv://Bacteria:Bacteria@bacteria.vjhddyx.mongodb.net/?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://Bacteria:Bacteria@bacteria.vjhddyx.mongodb.net/?retryWrites=true&w=majority")
 
 
 const PORT = 3000;

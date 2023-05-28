@@ -1,0 +1,13 @@
+<form (submit)="onSubmit($event)" enctype="multipart/form-data">
+  <div>
+    <label for="images">Upload multiple pictures</label>
+    <input type="file" id='images' name="images" accept="image/jpeg image/bmp" required multiple />
+  </div>
+  <button type="submit">Submit</button>
+</form>
+
+
+<div *ngFor="let response of imageResponses">
+  <img [src]="response.image" alt="Uploaded Image" width="200" height="200">
+  <p>{{ response.message }}</p>
+</div>

@@ -9,6 +9,7 @@ export const app = Express();
 app.use(fileUpload({
   createParentPath: true
 }));
+app.use(cors());
 
 
 const pathToImages = path.resolve(path.join(__dirname, '../images/'));

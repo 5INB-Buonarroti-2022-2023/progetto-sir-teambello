@@ -8,23 +8,35 @@ import { UploadedFile } from "express-fileupload";
 import { imageModel } from "../dbModels";
 
 class result {
-    _fileName: string;
-    _value: Number;
+    private _processedFileName: string;
+    private _originalFileName: string;
+    private _value: Number;
 
 
-    constructor(fileName: string, value: Number) {
-        this._fileName = fileName;
+    constructor(originalFileName: string, processedFileName : string, value: Number) {
+        this._originalFileName = originalFileName;
+        this._processedFileName = processedFileName;
         this._value = value;
     }
 
-    get fileName() {
-        return this._fileName;
+
+    get originalFileName(){
+        return this._originalFileName;
     }
 
-    public get value(): Number {
+    get processedFileName() {
+        return this._processedFileName;
+    }
+
+    get value() {
         return this._value;
     }
 }
+
+interface ImageData {
+    base64Image: string;
+    message: string;
+  }  
 
 export class processingAPI {
     private readonly pathToImages = pathToTmpImages;
@@ -61,44 +73,53 @@ export class processingAPI {
         //process image
         let results: result[] = [];
 
-        fileNames.forEach(async (file) => {
-            exec('python3 ' + path.resolve('../processing/main.py' + '  ' + file), (error, stdout, stderr) => {
-
-                if (error) {
-                    console.log(`error: ${error.message}`);
-                }
-                else if (stderr) {
-                    console.log(`stderr: ${stderr}`);
-                }
-                else {
-                    let procImgName = stdout.substring(0, stdout.indexOf(':')).trim();
-                    let val = Number.parseInt(stdout.substring(stdout.indexOf(':') + 1).trim());
-                    console.log(procImgName);
-                    console.log(val);
-                    results.push(new result(procImgName, val));
-                    console.log(results);
-                }
+        await Promise.all(
+            fileNames.map(async (file) => {
+                return new Promise<void>((resolve) => {
+                    exec(
+                        'python3 ' + path.resolve('../processing/main.py' + '  ' + file),
+                        async (error, stdout, stderr) => {
+                            if (error) {
+                                console.log(`error: ${error.message}`);
+                            } else if (stderr) {
+                                console.log(`stderr: ${stderr}`);
+                            } else {
+                                let procImgName = stdout.substring(0, stdout.indexOf(':')).trim();
+                                let val = Number.parseInt(stdout.substring(stdout.indexOf(':') + 1).trim());
+                                results.push(new result(file, procImgName, val));
+                                console.log(results)
+                            }
+                            resolve();
+                        }
+                    );
+                });
             })
+        );
 
-        }
-        )
+        console.log('zdravo');
+        const imageData: ImageData[] = [];
 
-        //problema di asyncronicità
+        results.forEach( result => {
 
-        console.log('tst')
+            //to add code for mongodb
+            const immagine = new imageModel({
+                original_img: result.originalFileName,
+                processed_img: result.processedFileName,
+                result: result.value,
+            });
+            
+            immagine.save();
+
+            const filePath = path.join(pathToTmpImages, result.processedFileName);
+            const data = fs.readFileSync(filePath);
+            const base64Image = Buffer.from(data).toString('base64');
+            imageData.push({
+              base64Image,
+              message: 'l\'immagine contiene circa '+result.value+' elementi',
+            });
+          });
         
-        //6) return processed image 
-        //const p = path.join(this.pathToImages, req.params.productID + ".jpg");
-        // const p = path.join(this.pathToImages, results[0].fileName);
-
-        /*
-                if (!fs.existsSync(p)) {
-                    res.status(404).sendFile(notFoundImage);
-                    return;
-                }
-                res.sendFile(p);
-          
-            */
+          res.json(imageData);
     }
 
 }
