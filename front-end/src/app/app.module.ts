@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UploaderComponent } from './uploader/uploader.component';
 import { ImageUploadComponent } from './image-upload-component/image-upload-component.component';
+import { ViewAllComponent } from './view-all/view-all.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UploaderComponent,
     ImageUploadComponent,
+    ViewAllComponent,
   ],
   imports: [
     BrowserModule,
