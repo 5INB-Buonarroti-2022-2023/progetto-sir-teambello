@@ -1,5 +1,13 @@
-<app-image-upload></app-image-upload>
-<br/>
-<br/>
-<br/>
-<app-view-all></app-view-all>
+<nav style="height: 50px; background-color: rgb(255, 215, 215);">
+    <div style="padding-top: 20px; display: flex; justify-content: space-between;">
+        <div style="margin-left:50px;">
+            <a routerLink="" style="margin-left: 20px;">Home</a>
+            <a routerLink="vis" style="margin-left: 20px;">Visualizza</a>
+        </div>
+        <div style="margin-right:50px;">    
+            <a routerLink="signup" style="margin-left: 20px;">Signup</a>
+        </div>    
+    </div>
+</nav>
+
+<router-outlet></router-outlet>

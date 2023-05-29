@@ -22,7 +22,7 @@ export class ImageUploadComponent {
       formData.append('images', fileList[i]);
     }
 
-    this.http.post<any>('http://127.0.0.1:3000/api/process', formData)
+    this.http.post<any>('http://172.16.0.242:3000/api/process', formData)
     .subscribe(response => {
       console.log(response);
       this.imageResponses = response.map((item: any) => (

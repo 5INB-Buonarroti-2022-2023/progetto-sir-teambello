@@ -14,6 +14,6 @@ export const mongo = mongoose.connect("mongodb+srv://Bacteria:Bacteria@bacteria.
 
 const PORT = 3000;
 
-app.listen(PORT, ()  => {
+app.listen(PORT,  "172.16.0.242", ()  => {
     console.log("hi! server started")
 });
