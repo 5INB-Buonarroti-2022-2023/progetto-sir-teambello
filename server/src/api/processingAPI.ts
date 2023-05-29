@@ -73,7 +73,7 @@ export class processingAPI {
                         return;
                     }
 
-                    console.log('Query results:', documents[1].processed_img);
+                    documents.forEach( doc => console.log('Query results:', doc.processed_img));
 
                     const resultQuery = documents.map(doc => {
                         return { processed_img: doc.processed_img, value: doc.result }

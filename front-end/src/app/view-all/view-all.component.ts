@@ -14,7 +14,7 @@ export class ViewAllComponent {
   onSubmit(event: any): void {
 	  event.preventDefault();
 
-    this.http.get<any>('http://172.16.0.242:3000/server/images/service/tmp')
+    this.http.get<any>('http://172.16.0.242:3000/api/public')
     .subscribe(response => {
     console.log(response);
     this.imageResponses = response.map((item: any) => (

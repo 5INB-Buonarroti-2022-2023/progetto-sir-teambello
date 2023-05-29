@@ -1,10 +1,14 @@
-<div style="width: 80%; margin: 0 auto; border: 2px gray solid; height: auto; margin-top: 80px; display: flex; justify-content: center;">    
-    <form method="get" action="http://127.0.0.1:3000/api/public">
+<div style="width: 80%; margin: 0 auto; border: 2px gray solid; height: auto; margin-top: 80px; display: flex; justify-content: center; margin-bottom: 100px;">    
+
+    <form (submit)="onSubmit($event)">
         <button type="submit" style="padding: 25px; margin: 20px 20px;">visualizza tutto</button>
     </form>
+    
     <br><br><br>
-    <div *ngFor="let response of imageResponses">
-        <img [src]="response.image" alt="Uploaded Image" width="200" height="200">
-        <p>{{ response.message }}</p>
+    <div style="display: flex; margin-top: 200px; max-height: 800px; flex-wrap: wrap;">
+        <div *ngFor="let response of imageResponses" style="margin: 10px 10px 10px 10px;">
+            <img [src]="response.image" alt="Uploaded Image" width="200" height="200">
+            <p>{{ response.message }}</p>
+        </div>
     </div>
 </div>
